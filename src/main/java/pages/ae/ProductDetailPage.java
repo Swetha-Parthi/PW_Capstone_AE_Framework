@@ -12,6 +12,7 @@ import framework.base.BasePage;
 
 public class ProductDetailPage extends BasePage {
 
+	private final Locator reviewText;
 	private final Locator reviewName;
 	private final Locator reviewEmail;
 	private final Locator reviewAdd;
@@ -21,25 +22,29 @@ public class ProductDetailPage extends BasePage {
 	private final Locator availability;
 	private final Locator condition;
 	private final Locator brand;
-	private final Locator cartquantity;
 	private final Locator quantityTextBox;
 	private final Locator addToCartButton;
 
 	public ProductDetailPage(Page page) {
 		super(page);
+		this.reviewText = page.getByText("Write Your Review");
 		this.category = page.locator(".product-information p:has-text('Category')"); // CSS selector .className tagName
-		this.price = page.locator(".product-information span:has-text('Rs')");
-		this.availability = page.getByText(Pattern.compile("Availability"));
-		this.condition = page.getByText(Pattern.compile("Condition"));
-		this.brand = page.getByText(Pattern.compile("Brand"));
+		this.price = page.getByText(Pattern.compile("Rs.", Pattern.CASE_INSENSITIVE));
+		this.availability = page.locator(".product-information p:has-text('Availability')");
+		this.condition = page.locator(".product-information p:has-text('Condition')");
+		this.brand = page.locator(".product-information p:has-text('Brand')");
 		this.reviewName = page.getByPlaceholder("Your Name");
-		this.reviewEmail = page.getByPlaceholder("Email Address");
+		this.reviewEmail = page.locator("#email");
 		this.reviewAdd = page.getByPlaceholder(Pattern.compile("Add Review Here!"));
-		this.reviewSubmitBtn = page.locator("#reviewSubmitBtn");
-		this.quantityTextBox = page.getByRole(AriaRole.TEXTBOX,
-				new Page.GetByRoleOptions().setName(Pattern.compile("quantity", Pattern.CASE_INSENSITIVE)));
-		this.cartquantity = page.locator(".cart_quantity button");
+		this.reviewSubmitBtn = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(Pattern.compile("Submit", Pattern.CASE_INSENSITIVE)));
+		this.quantityTextBox = page.locator("#quantity");
 		this.addToCartButton = page.getByText(Pattern.compile("Add to cart", Pattern.CASE_INSENSITIVE));
+	}
+	
+	// To verify 'Write Your Review' is visible
+	
+	public void verifyReviewTextVisibility() {
+		assertThat(reviewText).isVisible();
 	}
 
 	// To verify product details are visible: product name, category, price, availability, condition, brand
@@ -61,12 +66,6 @@ public class ProductDetailPage extends BasePage {
 		quantityTextBox.clear();
 		quantityTextBox.fill(String.valueOf(quantityValue));
 		return quantityValue;
-	}
-
-	// To check quantity is correctly visible
-
-	public void verifyuantity(int quantityValue) {
-		assertThat(cartquantity).hasText(String.valueOf(quantityValue));
 	}
 
 	// To click 'Add to Cart' button

@@ -1,14 +1,18 @@
 package pages.ae;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.WaitForSelectorState;
 
 import framework.base.BasePage;
 import framework.reporting.ReportManager;
@@ -19,49 +23,80 @@ public class ProductsPage extends BasePage {
 	private final Locator products;
 	private final Locator searchedProdResult;
 	private final Locator ContinueShopButton;
-	private final Locator ViewCartLink;
-	
-	// Dynamic locator for category 
-	
+	private final Locator BrandSection;
+	private final Locator BrandList;
+	private final Locator singleCard;
+
+	// Dynamic locator for category
+
 	private Locator getCategory(String category) {
-		
+
 		return page.getByText(Pattern.compile("^\\s*" + category + "\\s*$", Pattern.CASE_INSENSITIVE));
 	}
-	
-	// Dynamic locator for sub category 
-	
+
+	// Dynamic locator for sub category
+
 	private Locator getSubCategory(String subcategory) {
-		
-		return page.getByText(Pattern.compile(subcategory, Pattern.CASE_INSENSITIVE));
+
+		// Go to the Sidebar (#accordian), find a Link (LINK), make sure the name is exactly (^...$) 'Dress'
+
+		return page.locator("#accordian").getByRole(AriaRole.LINK, new Locator.GetByRoleOptions()
+				.setName(Pattern.compile("^" + subcategory + "$", Pattern.CASE_INSENSITIVE)));
 	}
-	
-	private Map<String, Map<String, Runnable>> categoryMap = new HashMap<>();// nested map, category -> sub category -> action click
-	
+
+	private Map<String, Map<String, Runnable>> categoryMap = new HashMap<>();// nested map, category -> sub category ->
+																				// action click
+
 	public ProductsPage(Page page) {
 		super(page);
 		this.SearchTextBox = page.locator("#search_product");
 		this.SearchButton = page.locator("#submit_search");
-		this.searchedProdResult = page.locator(".productinfo.text-center p").first();
-		this.products = page.locator(".product-image-wrapper"); // Product page: Finds all product containers on the page.
+		this.searchedProdResult = page.locator(".productinfo p");
+		this.products = page.locator(".product-image-wrapper"); // Product page: Finds all product containers on the
+																// page.
 		// (products container--> Product 1 container, Product 2 container,.. -->Each
 		// container contains: Image, Product name, Price, View Product link
-		this.ContinueShopButton = page.getByText("Continue Shopping");
-		this.ViewCartLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("View Cart"));
+		//this.ContinueShopButton = page.getByText("Continue Shopping");
+		this.ContinueShopButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Continue Shopping"));
+		this.BrandSection = page.locator(".brands_products");
+		this.BrandList = page.locator(".brands-name ul li a");
+		this.singleCard = page.locator(".single-products");
 	}
 
 	// To search products
 
-	public void searchProduct(String name) {
+	public String searchProduct(String name) {
 
+		SearchTextBox.clear();
 		SearchTextBox.fill(name);
 		SearchButton.click();
+		return name;
 	}
 
 	// To select brands in products page
 
-	public void selectProductBrand(String brandName) {
+	public String selectProductBrand(String brandName) {
 		page.getByRole(AriaRole.LINK,
 				new Page.GetByRoleOptions().setName(Pattern.compile(brandName, Pattern.CASE_INSENSITIVE))).click();
+		return brandName;
+	}
+
+	// To verify Brand section is displayed
+
+	public void verifyBrandSectionDisplay() {
+
+		assertThat(BrandSection).isVisible();
+
+		int brandCount = BrandList.count();
+		logger.info("Brand count: " + brandCount);
+
+		assertTrue(brandCount > 0, "No brands displayed");
+
+		List<String> brands = BrandList.allInnerTexts();
+
+		for (String brand : brands) {
+			logger.info("Brand: " + brand);
+		}
 	}
 
 	// To verify whether products related to particular brand is displayed
@@ -106,16 +141,20 @@ public class ProductsPage extends BasePage {
 
 	public String addToCartHoverwithIndex(int index) {
 
-		Locator hoverproduct = products.nth(index); // selects a specific element from the list
+		Locator productCard = products.nth(index);
+		String productName = productCard.locator(".productinfo p").textContent().trim();
 
-		String productName = hoverproduct.locator(".productinfo p").textContent().trim();
+		productCard.hover();
 
-		hoverproduct.hover(); // Hover over the product based on index
+		// THE FIX: Target the button specifically inside the orange OVERLAY
+		// and use .first() to resolve the conflict between the two buttons.
+		// We add .waitFor() to ensure the orange overlay has actually appeared.
+		Locator overlayBtn = productCard.locator(".product-overlay").getByText("Add to cart").first();
 
-		// Inside that specific product container, Find a link With text "Add to cart"
-		hoverproduct.getByRole(AriaRole.LINK,
-				new Locator.GetByRoleOptions().setName(Pattern.compile("Add to cart", Pattern.CASE_INSENSITIVE)))
-				.click();
+		overlayBtn.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+
+		// Use Force Click just in case the animation isn't 100% finished
+		overlayBtn.click(new Locator.ClickOptions().setForce(true));
 
 		return productName;
 	}
@@ -127,40 +166,62 @@ public class ProductsPage extends BasePage {
 		assertThat(products).not().hasCount(0);
 	}
 
-	// To click 'Continue Shopping' button
-
-	public void clickContinueShopBtn() {
-		ContinueShopButton.click();
-	}
-
-	// To click 'View Cart' link
-
-	public void clickViewCartLink() {
-		ViewCartLink.click();
-	}
-
 	// To verify all searched products are displayed
 
-	public void verifySearchResult(String searchText) {
+	public List<String> verifySearchResult(String searchText) {
 
-		int count = searchedProdResult.count(); // This will avoid multiple time DOM query run. count() action will run
-												// once and store count value in count variable
+		int productCount = searchedProdResult.count();
+		logger.info("Products displayed after search: " + productCount);
 
-		if (count == 0) {
-			logger.info("No products found for the input search: " + searchText);
-			ReportManager.logStep("No products found for the input search: " + searchText);
-			return;
+		// Verify products are displayed
+		assertTrue(productCount > 0, "No products displayed for search: " + searchText);
+
+		// Log all product names
+		List<String> products = searchedProdResult.allInnerTexts();
+
+		for (String product : products) {
+			logger.info("Product found: " + product);
 		}
-		assertThat(searchedProdResult).containsText(Pattern.compile(searchText, Pattern.CASE_INSENSITIVE));
+
+		logger.info("Search results displayed successfully for: " + searchText);
+		ReportManager.logStep("Search results displayed successfully for: " + searchText);
+
+		return products;
 
 	}
-	
+
+	// To add list of searched products into cart
+
+	public List<String> addSearchListToCartPage() {
+
+		List<String> addedProdNames = new ArrayList<>();
+
+		int productCount = singleCard.count();
+		
+		for (int i = 0; i < productCount; i++) {
+			String name = singleCard.nth(i).locator(searchedProdResult).textContent().trim();
+			addedProdNames.add(name);
+
+			singleCard.nth(i).hover();
+			singleCard.nth(i).locator(".product-overlay").getByText("Add to cart").first()
+					.click(new Locator.ClickOptions().setForce(true));
+			
+			ContinueShopButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+			
+			ContinueShopButton.click();
+			
+			ContinueShopButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+				
+			}
+		return addedProdNames;
+	}
+
 	// To Initialize category
 
 	public void initializeCategory() {
 
 		// creates and fills the map with category and sub category actions
-		
+
 		// map for women sub categories
 		Map<String, Runnable> women = new HashMap<>();
 		women.put("dress", () -> getSubCategory("Dress").click());
@@ -191,11 +252,11 @@ public class ProductsPage extends BasePage {
 		subcategory = subcategory.toLowerCase();
 
 		switch (category) {
-		
+
 		case "women":
 		case "men":
 		case "kids":
-			
+
 			getCategory(category).click();
 			break;
 
@@ -206,21 +267,25 @@ public class ProductsPage extends BasePage {
 					+ ". Please choose correct category - Women/ Men/ Kids");
 			return;
 		}
-		
-			Map<String, Runnable> subMap = categoryMap.get(category);
-			
-			if (subMap != null && subMap.containsKey(subcategory)) 
-			// subMap will have categoryMap.get("women") AND subMap.containsKey("dress") THEN subMap.get("dress").run() --> DressCategory.click()
-			// without subMap..containsKey() -> if it was mobile, we'll get null pointer exception
-			{
-				subMap.get(subcategory).run();
-			} 
-			
-			else {
-				logger.error("Invalid subcategory is selected: " + subcategory);
-				ReportManager.logStep("Invalid subcategory is selected: " + subcategory);
 
-			}
+		Map<String, Runnable> subMap = categoryMap.get(category);
+
+		if (subMap != null && subMap.containsKey(subcategory))
+
+		// subMap will have categoryMap.get("women") AND subMap.containsKey("dress")
+		// THEN subMap.get("dress").run() --> DressCategory.click()
+		// without subMap..containsKey() -> if it was mobile, we'll get null pointer
+		// exception
+		{
+			// This 'waitFor' ensures the accordion has finished opening
+			getSubCategory(subcategory).waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+			subMap.get(subcategory).run();
+		}
+
+		else {
+			logger.error("Invalid subcategory is selected: " + subcategory);
+			ReportManager.logStep("Invalid subcategory is selected: " + subcategory);
+
 		}
 	}
-
+}

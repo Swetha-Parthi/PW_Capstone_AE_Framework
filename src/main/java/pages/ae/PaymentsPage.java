@@ -19,8 +19,7 @@ public class PaymentsPage extends BasePage{
 	private final Locator expMonth;
 	private final Locator expYear;
 	private final Locator payConfirmOrderBtn;
-	private final Locator invoiceBtn;
-	
+	private final Locator invoiceBtn;	
 
 	public PaymentsPage(Page page) {
 		super(page);
@@ -51,16 +50,21 @@ public class PaymentsPage extends BasePage{
 		payConfirmOrderBtn.click();
 	}
 	
-	
 	// To download invoice
 	
-	public void downloadInvoice() {
+	public Path downloadInvoice() {
 		
 		Download download = page.waitForDownload(() ->{ invoiceBtn.click(); });
 		Path path = Paths.get("downloads/" + download.suggestedFilename()); // download file names suggested by browser/ server and convert into Java Path object 
 		download.saveAs(path); // PW temporarily store the file, this step helps to save downloaded file to location defined by path
+		return path;
+			
+	}
+	
+	// Verify invoice is downloaded successfully 
+	
+	public void verifyInvoiceDwonload(Path path) {
 		
 		assertTrue(path.toFile().exists(), "Invoice download failed"); //assertTrue(condition, failureMessage); true - test pass, failure - show error message
 	}
-	
 }

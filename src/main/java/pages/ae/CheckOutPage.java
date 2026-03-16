@@ -19,7 +19,7 @@ public class CheckOutPage extends BasePage{
 	
 	public CheckOutPage(Page page) {
 		super(page);
-		this.commentadd = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("message"));
+		this.commentadd = page.locator("textarea[name='message']");
 		this.placeOrderBtn = page.getByText(Pattern.compile("Place Order", Pattern.CASE_INSENSITIVE));
 	}
 	
@@ -29,10 +29,17 @@ public class CheckOutPage extends BasePage{
 				String address, String address2, String country, String state, String city, String zip, String phNumber) {
 
 			// addressType : Delivery - id="address_delivery", Billing -id="address_invoice"
-			Locator actualAddress = page.locator("#" + addressType + " li");
+			Locator actualAddress = page.locator("#" + addressType);
+			
+			String prefix = gender.equalsIgnoreCase("male") ? "Mr. " : "Mrs. ";
 
-			List<String> expAddress = List.of(gender + ". " + firstname + " " + lastname, address, address2,
-					city + " " + state + " " + zip, country, phNumber);
+			List<String> expAddress = List.of(prefix + firstname + " " + lastname, 
+					address, 
+					address2,
+					city + " " + state,
+					zip, 
+					country, 
+					phNumber);
 
 			for (String value : expAddress) {
 				assertThat(actualAddress).containsText(value);

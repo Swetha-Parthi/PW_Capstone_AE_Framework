@@ -17,35 +17,42 @@ public abstract class BasePage {
 	protected Page page;
 	protected Logger logger;
 	protected Locator ContinueButton;
+	private final Locator subscriptionText;
+	private final Locator clickSubscriptionMailArrow;
+	private final Locator upArrow;
 	private final Locator EmailSubscription;
-	private final Locator Arrowcircle;
+	private final Locator ContinueShopButton;
+	private final Locator ViewCartLink;
 
 	// Parameterized constructor
-	
+
 	public BasePage(Page page) {
 		this.page = page;
 		this.logger = LogManager.getLogger(this.getClass());
 		this.ContinueButton = page.getByText(Pattern.compile("Continue", Pattern.CASE_INSENSITIVE));
+		this.subscriptionText = page.getByText(Pattern.compile("Subscription", Pattern.CASE_INSENSITIVE));
+		this.clickSubscriptionMailArrow = page.locator(".fa-arrow-circle-o-right");
+		this.upArrow = page.locator("#scrollUp");
 		this.EmailSubscription = page.locator("#susbscribe_email");
-		this.Arrowcircle = page.getByRole(AriaRole.BUTTON,
-				new Page.GetByRoleOptions().setName(Pattern.compile("arrow-circle-o-right", Pattern.CASE_INSENSITIVE)));
+		this.ContinueShopButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Continue Shopping"));
+		this.ViewCartLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("View Cart"));
 	}
 
 	// Check the title and URL
-	
+
 	public void verifyPageLoaded(String expURL, String expTitle) {
 		assertThat(page).hasURL(Pattern.compile(expURL, Pattern.CASE_INSENSITIVE));
-		assertThat(page).hasTitle(Pattern.compile(expTitle, Pattern.CASE_INSENSITIVE)); 
+		assertThat(page).hasTitle(Pattern.compile(expTitle, Pattern.CASE_INSENSITIVE));
 	}
 
 	// CheckBox
-	
+
 	public void setCheckBox(Locator checkbox, boolean shouldBeChecked, String checkboxName) {
 		boolean isChecked = checkbox.isChecked();
 		if (isChecked != shouldBeChecked) {
 			checkbox.click();
 		}
-		// final verification to ensure the checkbox is in expected state
+		// final verification to ensure the check box is in expected state
 		if (shouldBeChecked) {
 			assertThat(checkbox).isChecked();
 		} else {
@@ -55,7 +62,7 @@ public abstract class BasePage {
 	}
 
 	// verify all text messages
-	
+
 	public void verifyTextMessageDisplayed(String expMsg, Boolean exactMatch) {
 		if (exactMatch) {
 			assertThat(page.getByText(expMsg)).isVisible();
@@ -65,15 +72,55 @@ public abstract class BasePage {
 	}
 
 	// To click continue button
-	
+
 	public void clickContinueButton() {
 		ContinueButton.click();
 	}
 
+	// To scroll down to footer
+
+	public void scrolldown() {
+
+		subscriptionText.scrollIntoViewIfNeeded();
+	}
+
+	// Verify subscription text
+
+	public void verifySubscriptionText() {
+
+		assertThat(subscriptionText).isVisible();
+	}
+
 	// To enter subscription email
-	
+
 	public void enterSubscriptionEmail(String email) {
 		EmailSubscription.fill(email);
-		Arrowcircle.click();
+		clickSubscriptionMailArrow.click();
 	}
+
+	// To scroll up using arrow mark
+
+	public void clickArrow() {
+		upArrow.click();
+	}
+
+	// To scroll up using scroll commands
+
+	public void scrollup() {
+		page.evaluate("window.scrollTo(0,0)");
+	}
+	
+
+	// To click 'Continue Shopping' button
+
+	public void clickContinueShopBtn() {
+		ContinueShopButton.click();
+	}
+
+	// To click 'View Cart' link
+
+	public void clickViewCartLink() {
+		ViewCartLink.click();
+	}
+
 }

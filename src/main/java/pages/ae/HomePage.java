@@ -1,11 +1,15 @@
 package pages.ae;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.WaitForSelectorState;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static org.testng.Assert.assertTrue;
 
 import framework.base.BasePage;
 
@@ -20,10 +24,10 @@ public class HomePage extends BasePage {
 	private final Locator ProductsLink;
 	private final Locator CartLink;
 	private final Locator iconRecommendItems;
-	private final Locator addToCartButton;
+	private final Locator prodRecommend;
 	private final Locator captureProdName;
-	private final Locator subscriptionText;
-	private final Locator upArrow;
+	private final Locator categoryHeader;
+	private final Locator categoryList;
 
 	public HomePage(Page page) {
 		super(page);
@@ -34,17 +38,19 @@ public class HomePage extends BasePage {
 		this.LogoutLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(Pattern.compile("Logout")));
 		this.ContactusLink = page.getByRole(AriaRole.LINK,
 				new Page.GetByRoleOptions().setName(Pattern.compile("Contact us", Pattern.CASE_INSENSITIVE)));
-		this.TestCaseLink = page.getByRole(AriaRole.LINK,
-				new Page.GetByRoleOptions().setName(Pattern.compile("Test Cases", Pattern.CASE_INSENSITIVE))).first();
+		this.TestCaseLink = page
+				.getByRole(AriaRole.LINK,
+						new Page.GetByRoleOptions().setName(Pattern.compile("Test Cases", Pattern.CASE_INSENSITIVE)))
+				.first();
 		this.ProductsLink = page.getByRole(AriaRole.LINK,
 				new Page.GetByRoleOptions().setName(Pattern.compile("Products", Pattern.CASE_INSENSITIVE)));
 		this.CartLink = page.getByRole(AriaRole.LINK,
 				new Page.GetByRoleOptions().setName(Pattern.compile("Cart", Pattern.CASE_INSENSITIVE)));
 		this.iconRecommendItems = page.getByText(Pattern.compile("recommended items", Pattern.CASE_INSENSITIVE));
-		this.addToCartButton = page.locator("#recommended-item-carousel .item.active .add-to-cart");
-		this.captureProdName = page.locator("#recommended-item-carousel .item.active .productinfo p");
-		this.subscriptionText = page.getByText(Pattern.compile("Subscription", Pattern.CASE_INSENSITIVE));
-		this.upArrow = page.locator("#scrollUp");
+		this.prodRecommend = page.locator("#recommended-item-carousel .item.active");
+		this.captureProdName = page.locator("#recommended-item-carousel .item.active .productinfo p");	
+		this.categoryHeader = page.locator(".left-sidebar h2").first();
+		this.categoryList = page.locator(".panel-group.category-products .panel-title a");
 	}
 
 	// To check whether correct user is logged in
@@ -102,29 +108,34 @@ public class HomePage extends BasePage {
 
 		iconRecommendItems.scrollIntoViewIfNeeded();
 		assertThat(iconRecommendItems).isVisible();
-		String nameProduct = captureProdName.textContent().trim();
-		captureProdName.locator(addToCartButton).first().click();
+		
+		captureProdName.first().waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+		
+		String nameProduct = captureProdName.first().textContent().trim();
+		
+		prodRecommend.filter(new Locator.FilterOptions().setHasText(nameProduct))
+		.locator("a.add-to-cart").first().click(new Locator.ClickOptions().setForce(true));
+		
 		return nameProduct;
+		
 	}
 
-	// To scroll down and verify subscription text
+	// To verify Brand section is displayed
 
-	public void scrolldown() {
+	public void verifyBrandCategoryDisplay() {
 
-		subscriptionText.scrollIntoViewIfNeeded();
-		assertThat(subscriptionText).isVisible();
+		assertThat(categoryHeader).isVisible();
 
+		int categoryCount = categoryList.count();
+		logger.info("Category count: " + categoryCount);
+
+		assertTrue(categoryCount > 0, "No Category displayed");
+
+		List<String> category = categoryList.allInnerTexts();
+
+		for (String list : category) {
+			logger.info("Brand: " + list);
+		}
 	}
 
-	// To scroll up using arrow mark
-
-	public void clickArrow() {
-		upArrow.click();
-	}
-
-	// To scroll up using scroll commands
-
-	public void scrollup() {
-		page.evaluate("window.scrollTo(0,0)");
-	}
 }
