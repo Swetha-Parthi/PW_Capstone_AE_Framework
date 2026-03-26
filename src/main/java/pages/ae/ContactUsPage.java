@@ -1,7 +1,6 @@
 package pages.ae;
 
 import java.nio.file.Paths;
-import java.util.regex.Pattern;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;

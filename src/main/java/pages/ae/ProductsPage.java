@@ -38,7 +38,7 @@ public class ProductsPage extends BasePage {
 
 	private Locator getSubCategory(String subcategory) {
 
-		// Go to the Sidebar (#accordian), find a Link (LINK), make sure the name is exactly (^...$) 'Dress'
+		// Go to the Side bar (#accordian), find a Link (LINK), make sure the name is exactly (^...$) 'Dress'
 
 		return page.locator("#accordian").getByRole(AriaRole.LINK, new Locator.GetByRoleOptions()
 				.setName(Pattern.compile("^" + subcategory + "$", Pattern.CASE_INSENSITIVE)));
@@ -130,7 +130,7 @@ public class ProductsPage extends BasePage {
 	public String viewProductWithName(String prodname) {
 
 		products.filter(new Locator.FilterOptions().setHasText(prodname))
-				.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("View Product")).click();
+				.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("View Product")).first().click();
 		// locator() → get elements, filter() → narrow them, getByRole() → find element
 		// inside, click() → perform action
 

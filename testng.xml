@@ -10,94 +10,17 @@
 		<parameter name="environment" value="qa" />
 
 		<classes>
-			<class name="test.SignupTest">
-				<methods>
-					<include name="Test_AE01_TC01_Verify_NewUser_SignUp" />
-					<include name="Test_AE01_TC05_Signup_ExistingMail" />
-				</methods>
-			</class>
 
-			<class name="test.LoginTest">
-				<methods>
-					<include name="Test_AE01_TC02_Verify_Login_CorrectDetails" />
-					<include
-						name="Test_AE01_TC03_Verify_Login_Incorrect_MailPwd" />
-				</methods>
-			</class>
+			<class name="test.ProductsTest" />
+			<class name="test.CheckOutTest" />
+			<class name="test.CartTest" />
+			<class name="test.SignupTest" />
+			<class name="test.LoginTest" />
+			<class name="test.LogoutTest" />
+			<class name="test.HomeTest" />
+			<class name="test.ContactUsTest" />
+			<class name="test.TestsCaseTest" />
 
-			<class name="test.LogoutTest">
-				<methods>
-					<include name="Test_AE01_TC04_Verify_LogoutUser" />
-				</methods>
-			</class>
-
-			<class name="test.HomeTest">
-				<methods>
-					<include name="Test_AE05_TC10_Verify_HomePageSubscription" />
-					<include
-						name="Test_AE07_TC25_Verify_HomePageScrollUpArrow_ScrollDown" />
-					<include
-						name="Test_AE07_TC26_Verify_HomePageScrollUpWithoutArrow_ScrollDown" />
-					<include
-						name="Test_AE04_TC22_Verify_RecommendedProducts_AddedtoCart" />
-				</methods>
-			</class>
-
-			<class name="test.ContactUsTest">
-				<methods>
-					<include
-						name="Test_AE02_TC06_Verify_ContactUsForm_Submission" />
-				</methods>
-			</class>
-
-			<class name="test.TestsCaseTest">
-				<methods>
-					<include
-						name="Test_AE03_TC07_Verify_TestCase_Display" />
-				</methods>
-			</class>
-
-			<class name="test.ProductsTest">
-				<methods>
-					<include
-						name="Test_AE04_TC08_Verify_click_ProductsLink_viewProductDetails" />
-					<include name="Test_AE04_TC09_Verify_ProductsSearch" />
-					<include
-						name="Test_AE04_TC12_Verify_AddProduct_VerifyDetails" />
-					<include
-						name="Test_AE04_TC13_Verify_AddProductwithQuantity4_VerifyDetails" />
-					<include
-						name="Test_AE04_TC18_Verify_ProductNavigation_Categories" />
-					<include
-						name="Test_AE04_TC19_Verify_ProductNavigation_Brands" />
-					<include
-						name="Test_AE04_TC21_Verify_AddProductsReview" />
-				</methods>
-			</class>
-			
-				<class name="test.CheckOutTest">
-				<methods>
-					<include name="Test_AE06_TC14_Verify_Register_While_Checkout" />
-					<include
-						name="Test_AE06_TC15_Verify_Register_Before_Checkout" />
-					<include
-						name="Test_AE06_TC16_Verify_Login_Before_Checkout" />
-					<include
-						name="Test_AE06_TC23_Verify_Address_CheckoutPage" />
-						<include
-						name="Test_AE06_TC24_Verify_DownloadInvoice_AfterPurchaseOrder" />
-				</methods>
-			</class>
-			
-				<class name="test.CartTest">
-				<methods>
-					<include name="Test_AE05_TC11_Verify_CartPageSubscription" />
-					<include
-						name="Test_AE04_TC17_Verify_Products_AddRemove" />
-					<include
-						name="Test_AE04_TC20_Verify_AddProducts_Login_ViewCart" />
-				</methods>
-			</class>
 
 		</classes>
 
