@@ -9,24 +9,20 @@ import base.BaseTest;
 import framework.reporting.ReportManager;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Story;
-import pages.ae.HomePage;
-import pages.ae.TestCasePage;
 
 public class TestsCaseTest extends BaseTest {
 
-	// Case:7 - Verify user is able to click 'Contact Us' button, enter required details and also verify success message
+	// Case:7 - Verify user is able to click 'Contact Us' button, enter required
+	// details and also verify success message
 
 	@Test(description = "AE03_TC07_Verify user is able to navigate to test cases page and see all the test cases")
 	@Epic("AE-3, The Test case page should display all test cases ")
 	@Story("AE-12, All test cases related to the website should display")
 	public void Test_AE03_TC07_Verify_TestCase_Display() {
-		
+
 		logger.info("=============================================================================================");
 		logger.info("Start, Case:7 - Verify user is able to navigate to test cases page and see all the test cases");
 		logger.info("=============================================================================================");
-
-		HomePage homePage = pageManager.getHomePage();
-		TestCasePage testcasePage = pageManager.gettestcasePage();
 
 		List<String> expectedTitles = Arrays.asList("Test Case 1: Register User",
 				"Test Case 2: Login User with correct email and password",
@@ -49,15 +45,15 @@ public class TestsCaseTest extends BaseTest {
 		// Step:1 - Verify Home page is displayed and Navigate to Test Case page
 		logger.info("Running, Step:1 - Verify Home page is displayed and Navigate to Test Case page");
 		ReportManager.logStep("Verify Home page is displayed");
-		homePage.verifyPageLoaded("automationexercise", "Automation Exercise");
-		homePage.clickTestCaseLink();
-		
+		homePage().verifyPageLoaded("automationexercise", "Automation Exercise");
+		homePage().clickTestCaseLink();
+
 		// Step:2 - Expected titles are matched with Actual titles
 		logger.info("Running, Step:2 - Validating whether expected titles are matched with Actual titles");
 		ReportManager.logStep("Validating whether expected titles are matched with Actual titles");
-		testcasePage.validateAllTestCases(expectedTitles);
+		testcasePage().validateAllTestCases(expectedTitles);
 		ReportManager.attachScreenshot("Test cases are displayed successfully", captureScreenshot());
-		
+
 		logger.info("=====================End Case: Test Case Page Validation=========================");
 	}
 

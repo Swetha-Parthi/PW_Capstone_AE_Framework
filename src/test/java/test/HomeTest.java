@@ -6,8 +6,6 @@ import base.BaseTest;
 import framework.reporting.ReportManager;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Story;
-import pages.ae.CartPage;
-import pages.ae.HomePage;
 
 public class HomeTest extends BaseTest {
 
@@ -22,28 +20,26 @@ public class HomeTest extends BaseTest {
 		logger.info("Start, Case:10 - Verify user can successfully subscribe from the Home page");
 		logger.info("==========================================================================");
 
-		HomePage homePage = pageManager.getHomePage();
-
 		// Step:1 - Verify Home page is displayed
 		logger.info("Running, Step:1 - Verify Home page is displayed");
 		ReportManager.logStep("Verify Home page is displayed");
 
-		homePage.verifyPageLoaded("automationexercise", "Automation Exercise");
+		homePage().verifyPageLoaded("automationexercise", "Automation Exercise");
 
 		// Step:2 - Scroll down to footer and verify subscription text
 		logger.info("Running, Step:2 - Scroll down to footer and verify subscription text");
 		ReportManager.logStep("Scroll down to footer and verify subscription text");
 
-		homePage.scrolldown();
-		homePage.verifyTextMessageDisplayed("SUBSCRIPTION", true);
+		homePage().scrolldown();
+		homePage().verifyTextMessageDisplayed("SUBSCRIPTION", true);
 
 		// Step:3 - Enter email and verify text message is displayed
 		logger.info("Running, Step:3 - Enter email and verify text message is displayed");
 		ReportManager.logStep("Enter email and verify text message is displayed");
 
-		homePage.enterSubscriptionEmail("AETestUser@gmail.com");
+		homePage().enterSubscriptionEmail("AETestUser@gmail.com");
 		ReportManager.attachScreenshot("Successfully subscribed", captureScreenshot());
-		homePage.verifyTextMessageDisplayed("You have been successfully subscribed!", false);
+		homePage().verifyTextMessageDisplayed("You have been successfully subscribed!", false);
 	
 		logger.info("=====================End Case: User subscription from Home page=========================");
 	}
@@ -59,20 +55,18 @@ public class HomeTest extends BaseTest {
 		logger.info("Start, Case:25 - Verify user can successfully Scroll Down and Scroll Up using 'Arrow' button on home page");
 		logger.info("=========================================================================================================");
 
-		HomePage homePage = pageManager.getHomePage();
-
 		// Step:1 - Verify Home page is displayed
 		logger.info("Running, Step:1 - Verify Home page is displayed and Navigate to Products page");
 		ReportManager.logStep("Verify Home page is displayed");
 
-		homePage.verifyPageLoaded("automationexercise", "Automation Exercise");
+		homePage().verifyPageLoaded("automationexercise", "Automation Exercise");
 
 		// Step:2 - Scroll down to footer and verify subscription text
 		logger.info("Running, Step:2 - Scroll down to footer and verify subscription text");
 		ReportManager.logStep("Scroll down to footer and verify subscription text");
 
-		homePage.scrolldown();
-		homePage.verifyTextMessageDisplayed("SUBSCRIPTION", true);
+		homePage().scrolldown();
+		homePage().verifyTextMessageDisplayed("SUBSCRIPTION", true);
 
 		// Step:3 - Click arrow and move upward and verify text ''Full-Fledged practice.....' is visible
 		logger.info(
@@ -80,8 +74,8 @@ public class HomeTest extends BaseTest {
 		ReportManager
 				.logStep("Clicking arrow and move upward and verify text ''Full-Fledged practice.....' is visible");
 
-		homePage.clickArrow();
-		homePage.verifyTextMessageDisplayed("Full-Fledged practice website for Automation Engineers", false);
+		homePage().clickArrow();
+		homePage().verifyTextMessageDisplayed("Full-Fledged practice website for Automation Engineers", false);
 
 		ReportManager.attachScreenshot("Text is displayed successfully", captureScreenshot());
 		
@@ -99,27 +93,25 @@ public class HomeTest extends BaseTest {
 		logger.info("Start, Case:26 - Verify user can successfully Scroll Down and Scroll Up using 'Arrow' button on home page");
 		logger.info("=========================================================================================================");
 
-		HomePage homePage = pageManager.getHomePage();
-
 		// Step:1 - Verify Home page is displayed
 		logger.info("Running, Step:1 - Verify Home page is displayed and Navigate to Products page");
 		ReportManager.logStep("Verify Home page is displayed");
 
-		homePage.verifyPageLoaded("automationexercise", "Automation Exercise");
+		homePage().verifyPageLoaded("automationexercise", "Automation Exercise");
 
 		// Step:2 - Scroll down to footer and verify subscription text
 		logger.info("Running, Step:2 - Scroll down to footer and verify subscription text");
 		ReportManager.logStep("Scroll down to footer and verify subscription text");
 
-		homePage.scrolldown();
-		homePage.verifyTextMessageDisplayed("SUBSCRIPTION", true);
+		homePage().scrolldown();
+		homePage().verifyTextMessageDisplayed("SUBSCRIPTION", true);
 
 		// Step:3 - Scroll up and verify text ''Full-Fledged practice.....' is visible
 		logger.info("Running, Step:3 - Scroll up and verify text ''Full-Fledged practice.....' is visible");
 		ReportManager.logStep("Scroll up and verify text ''Full-Fledged practice.....' is visible");
 
-		homePage.scrollup();
-		homePage.verifyTextMessageDisplayed("Full-Fledged practice website for Automation Engineers", false);
+		homePage().scrollup();
+		homePage().verifyTextMessageDisplayed("Full-Fledged practice website for Automation Engineers", false);
 		ReportManager.attachScreenshot("Text is displayed successfully", captureScreenshot());
 		
 		logger.info("=====================End Case: Verify scroll down and scrollup=========================");
@@ -136,21 +128,18 @@ public class HomeTest extends BaseTest {
 			logger.info("Start, Case:22 - Verify user can successfully add products from Recommended items");
 			logger.info("=================================================================================");
 
-			HomePage homePage = pageManager.getHomePage();
-			CartPage cartPage = pageManager.getcartPage();
-
 			// Step:1 - Verify Home page is displayed
 			logger.info("Running, Step:1 - Verify Home page is displayed and Navigate to Products page");
 			ReportManager.logStep("Verify Home page is displayed");
 
-			homePage.verifyPageLoaded("automationexercise", "Automation Exercise");
+			homePage().verifyPageLoaded("automationexercise", "Automation Exercise");
 			
 			// Step:2 - Add recommended products to cart and verify its visible in cart page
 			logger.info("Running, Step:2 - Add recommended products to cart and verify its visible in cart page");
 			ReportManager.logStep("Add recommended products to cart and verify its visible in cart page");
-			String recomProd = homePage.addRecomendItems();
-			homePage.clickViewCartLink();
-			cartPage.verifyRecommendProdList(recomProd);
+			String recomProd = homePage().addRecomendItems();
+			homePage().clickViewCartLink();
+			cartPage().verifyRecommendProdList(recomProd);
 			ReportManager.attachScreenshot("Product Details displayed successfully", captureScreenshot());
 			
 			logger.info("=====================End Case: Added products from recommended items=========================");

@@ -6,8 +6,6 @@ import base.BaseTest;
 import framework.reporting.ReportManager;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Story;
-import pages.ae.HomePage;
-import pages.ae.SignupLoginPage;
 
 public class LogoutTest extends BaseTest {
 	
@@ -22,32 +20,29 @@ public class LogoutTest extends BaseTest {
 			logger.info("Start, Case:4 - Verify user is able to logout");
 			logger.info("===============================================");
 			
-			HomePage homePage = pageManager.getHomePage();
-			SignupLoginPage signuploginPage = pageManager.getSignupLoginPage();
-			
 			// Step:1 -  Verify Home page is displayed, Navigate to Login page and check 'Login into your acccount' is visible		
 			logger.info("Running, Step:1 -  Verify Home page is displayed, Navigate to Login page and check 'Login into your acccount' is visible");
 			ReportManager.logStep(" Verify Home page is displayed and Naviagting to Logout page");
-			homePage.verifyPageLoaded("automationexercise", "Automation Exercise");
-			homePage.clickSignupLoginLink();
-			homePage.verifyTextMessageDisplayed("Login to your account", false);
+			homePage().verifyPageLoaded("automationexercise", "Automation Exercise");
+			homePage().clickSignupLoginLink();
+			homePage().verifyTextMessageDisplayed("Login to your account", false);
 
 			// Step:2 - Entering user credentials
 			logger.info("Running, Step:2 - Entering user credentials");
 			ReportManager.logStep("Entering user credentials");
-			signuploginPage.enterLoginDetails("CFTestUser1770978867421@gmail.com", "CF@pwd0a0");
-			signuploginPage.clickLogin();
+			signuploginPage().enterLoginDetails("CFTestUser1770978867421@gmail.com", "CF@pwd0a0");
+			signuploginPage().clickLogin();
 			
 			// Step:3 - verify Logged in as username is visible
 			logger.info("Running, Step: 3 - Logged in as username is visible");
 			ReportManager.logStep("Verifying whether logged in as username is visible");
-			homePage.verifyLoggedIn("CFTestUser1770978867421");
+			homePage().verifyLoggedIn("CFTestUser1770978867421");
 			
 			// Step:4 - verify user is able to logout and navigate to login page
 			logger.info("Running, Step: 4 - verify user is able to logout and navigate to login page");
 			ReportManager.logStep("Verify whether user is able to logout and navigate to login page back");
-			homePage.clickLogoutLink();
-			signuploginPage.verifyPageLoaded("/login", "Signup");
+			homePage().clickLogoutLink();
+			signuploginPage().verifyPageLoaded("/login", "Signup");
 			
 			logger.info("==================End case: Logout User================");
 		}
